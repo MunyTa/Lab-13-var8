@@ -3,6 +3,7 @@ module github.com/MunyTa/Lab-13-var8
 go 1.21
 
 require (
+	github.com/docker/docker v24.0.7+incompatible
 	github.com/nats-io/nats.go v1.32.0
 	github.com/redis/go-redis/v9 v9.4.0
 	go.opentelemetry.io/otel v1.23.1
@@ -15,6 +16,7 @@ require (
 	github.com/cenkalti/backoff/v4 v4.2.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
 	github.com/dgryski/go-rendezvous v0.0.0-20200823014737-9f7001d12a5f // indirect
+	github.com/docker/client v8.3.3+incompatible // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
 	github.com/golang/protobuf v1.5.3 // indirect

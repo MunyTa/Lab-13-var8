@@ -85,14 +85,10 @@ type PipelineTask struct {
 
 const (
 	SubjectResumeParser   = "hr.resume.parse"
-	SubjectMatcher        = "hr.vacancy.match"
-	SubjectScheduler      = "hr.interview.schedule"
-	SubjectFeedback       = "hr.feedback.collect"
-	SubjectAuction        = "hr.auction.bid_request"
-	SubjectAuctionResult  = "hr.auction.bid_result"
+	SubjectMatcher       = "hr.vacancy.match"
+	SubjectScheduler     = "hr.interview.schedule"
+	SubjectFeedback      = "hr.feedback.collect"
+	SubjectAuction       = "hr.auction.bid_request"
+	SubjectAuctionResult = "hr.auction.bid_result"
 	SubjectTasksCompleted = "hr.tasks.completed"
-	SubjectLogs           = "hr.logs.collect"
-	SubjectEvents         = "hr.events.process"
-	SubjectDetection      = "hr.attacks.detect"
-	SubjectBlock          = "hr.traffic.block"
 )

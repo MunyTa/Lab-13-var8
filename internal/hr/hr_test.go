@@ -2,6 +2,7 @@ package hr
 
 import (
 	"testing"
+	"time"
 )
 
 func TestParseResumeText(t *testing.T) {
