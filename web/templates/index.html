@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HR Multi-Agent System Dashboard</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+        
+        header {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        h1 {
+            color: #1a1a2e;
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        
+        .card h2 {
+            color: #1a1a2e;
+            font-size: 18px;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 2px solid #667eea;
+        }
+        
+        .stat {
+            display: flex;
+            justify-content: space-between;
+            padding: 12px 0;
+            border-bottom: 1px solid #eee;
+        }
+        
+        .stat:last-child {
+            border-bottom: none;
+        }
+        
+        .stat-label {
+            color: #666;
+            font-size: 14px;
+        }
+        
+        .stat-value {
+            font-weight: 600;
+            color: #1a1a2e;
+        }
+        
+        .stat-value.success {
+            color: #10b981;
+        }
+        
+        .stat-value.warning {
+            color: #f59e0b;
+        }
+        
+        .stat-value.error {
+            color: #ef4444;
+        }
+        
+        .form-group {
+            margin-bottom: 16px;
+        }
+        
+        label {
+            display: block;
+            color: #1a1a2e;
+            font-size: 14px;
+            font-weight: 500;
+            margin-bottom: 6px;
+        }
+        
+        textarea, input, select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            font-size: 14px;
+            font-family: inherit;
+        }
+        
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            width: 100%;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+        
+        button:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            display: none;
+        }
+        
+        .result.show {
+            display: block;
+        }
+        
+        .result.error {
+            border-left-color: #ef4444;
+            background: #fef2f2;
+        }
+        
+        .agents-list {
+            list-style: none;
+        }
+        
+        .agents-list li {
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-bottom: 8px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        
+        .agent-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #10b981;
+        }
+        
+        .agent-status.offline {
+            background: #ef4444;
+        }
+        
+        .agent-name {
+            font-weight: 500;
+            color: #1a1a2e;
+        }
+        
+        .agent-subject {
+            font-size: 12px;
+            color: #666;
+            font-family: monospace;
+        }
+        
+        .pipeline-flow {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: #f8fafc;
+            border-radius: 8px;
+            margin-top: 16px;
+        }
+        
+        .pipeline-step {
+            text-align: center;
+            padding: 12px;
+        }
+        
+        .pipeline-step-icon {
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        
+        .pipeline-step-name {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .pipeline-arrow {
+            color: #667eea;
+            font-size: 20px;
+        }
+        
+        #response {
+            white-space: pre-wrap;
+            font-family: monospace;
+            font-size: 13px;
+            overflow-x: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>HR Multi-Agent System</h1>
+            <p class="subtitle">Automated recruitment pipeline: Resume Parsing, Matching, Interview Scheduling, Feedback</p>
+        </header>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>System Status</h2>
+                <div class="stat">
+                    <span class="stat-label">NATS Connection</span>
+                    <span class="stat-value" id="nats-status">Checking...</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Redis Connection</span>
+                    <span class="stat-value" id="redis-status">Checking...</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Processed Tasks</span>
+                    <span class="stat-value success" id="processed-count">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Failed Tasks</span>
+                    <span class="stat-value error" id="failed-count">0</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-label">Success Rate</span>
+                    <span class="stat-value" id="success-rate">0%</span>
+                </div>
+            </div>
+            
+            <div class="card">
+                <h2>Active Agents</h2>
+                <ul class="agents-list">
+                    <li>
+                        <span class="agent-status" id="agent-parser"></span>
+                        <div>
+                            <div class="agent-name">Resume Parser</div>
+                            <div class="agent-subject">hr.resume.parse</div>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="agent-status" id="agent-matcher"></span>
+                        <div>
+                            <div class="agent-name">Vacancy Matcher</div>
+                            <div class="agent-subject">hr.vacancy.match</div>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="agent-status" id="agent-scheduler"></span>
+                        <div>
+                            <div class="agent-name">Interview Scheduler</div>
+                            <div class="agent-subject">hr.interview.schedule</div>
+                        </div>
+                    </li>
+                    <li>
+                        <span class="agent-status" id="agent-feedback"></span>
+                        <div>
+                            <div class="agent-name">Feedback Agent</div>
+                            <div class="agent-subject">hr.feedback.collect</div>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="card">
+                <h2>Pipeline Flow</h2>
+                <div class="pipeline-flow">
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-icon">📄</div>
+                        <div class="pipeline-step-name">Parser</div>
+                    </div>
+                    <span class="pipeline-arrow">→</span>
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-icon">🔍</div>
+                        <div class="pipeline-step-name">Matcher</div>
+                    </div>
+                    <span class="pipeline-arrow">→</span>
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-icon">📅</div>
+                        <div class="pipeline-step-name">Scheduler</div>
+                    </div>
+                    <span class="pipeline-arrow">→</span>
+                    <div class="pipeline-step">
+                        <div class="pipeline-step-icon">💬</div>
+                        <div class="pipeline-step-name">Feedback</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="grid">
+            <div class="card">
+                <h2>Run HR Pipeline</h2>
+                <form id="pipeline-form">
+                    <div class="form-group">
+                        <label for="candidate_name">Candidate Name</label>
+                        <input type="text" id="candidate_name" name="candidate_name" required 
+                               placeholder="Enter candidate name">
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="vacancy_title">Position</label>
+                        <select id="vacancy_title" name="vacancy_title">
+                            <option value="Go Backend Developer">Go Backend Developer</option>
+                            <option value="Python Developer">Python Developer</option>
+                            <option value="DevOps Engineer">DevOps Engineer</option>
+                            <option value="Full Stack Developer">Full Stack Developer</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label for="raw_resume">Resume (Raw Text)</label>
+                        <textarea id="raw_resume" name="raw_resume" required
+                                  placeholder="Paste the candidate's resume text here..."></textarea>
+                    </div>
+                    
+                    <button type="submit" id="submit-btn">Run Pipeline</button>
+                </form>
+                
+                <div id="result" class="result"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        async function checkHealth() {
+            try {
+                const response = await fetch('/health');
+                const data = await response.json();
+                
+                document.getElementById('nats-status').textContent = 
+                    data.nats_connected ? 'Connected' : 'Disconnected';
+                document.getElementById('nats-status').className = 
+                    'stat-value ' + (data.nats_connected ? 'success' : 'error');
+                
+                document.getElementById('redis-status').textContent = 
+                    data.redis_connected ? 'Connected' : 'Disconnected';
+                document.getElementById('redis-status').className = 
+                    'stat-value ' + (data.redis_connected ? 'success' : 'error');
+                
+                document.getElementById('processed-count').textContent = data.processed_tasks;
+                document.getElementById('failed-count').textContent = data.failed_tasks;
+                
+                const total = data.processed_tasks + data.failed_tasks;
+                const rate = total > 0 ? ((data.processed_tasks / total) * 100).toFixed(1) : 0;
+                document.getElementById('success-rate').textContent = rate + '%';
+                
+                const agentsConnected = data.nats_connected;
+                ['parser', 'matcher', 'scheduler', 'feedback'].forEach(agent => {
+                    const el = document.getElementById('agent-' + agent);
+                    el.className = 'agent-status' + (agentsConnected ? '' : ' offline');
+                });
+            } catch (e) {
+                console.error('Health check failed:', e);
+            }
+        }
+        
+        document.getElementById('pipeline-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const btn = document.getElementById('submit-btn');
+            const result = document.getElementById('result');
+            
+            btn.disabled = true;
+            btn.textContent = 'Processing...';
+            result.className = 'result';
+            result.textContent = '';
+            
+            const formData = {
+                candidate_name: document.getElementById('candidate_name').value,
+                vacancy_title: document.getElementById('vacancy_title').value,
+                raw_resume: document.getElementById('raw_resume').value
+            };
+            
+            try {
+                const response = await fetch('/pipeline/hr', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(formData)
+                });
+                
+                const data = await response.json();
+                
+                result.className = 'result show';
+                result.textContent = JSON.stringify(data, null, 2);
+                
+                checkHealth();
+            } catch (e) {
+                result.className = 'result show error';
+                result.textContent = 'Error: ' + e.message;
+            } finally {
+                btn.disabled = false;
+                btn.textContent = 'Run Pipeline';
+            }
+        });
+        
+        checkHealth();
+        setInterval(checkHealth, 5000);
+    </script>
+</body>
+</html>
